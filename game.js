@@ -22,65 +22,24 @@
 }());
 
 /* =====================================================
-    RESPONSIVE SCALE
-    Keeps the 1600×850 canvas fitting any screen.
+    RESPONSIVE FULL-SCREEN CANVAS
+    The canvas always fills the browser viewport edge to
+    edge — its internal resolution is kept in sync with
+    the actual on-screen size, so the game is genuinely
+    responsive instead of a fixed-resolution box that
+    gets scaled up/down.
 ===================================================== */
-/* Portrait canvas dimensions for mobile */
-const PORTRAIT_W = 480;
-const PORTRAIT_H = 854;
-const LANDSCAPE_W = 1600;
-const LANDSCAPE_H = 850;
-
 function isMobileDevice() {
     return window.innerWidth < 900 || ("ontouchstart" in window && window.innerWidth < 1024);
 }
 
-function applyGameScale() {
-    const container = document.getElementById("gameContainer");
-    const gameCanvas = document.getElementById("gameCanvas");
-    if (!container) return;
-
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const mobile = isMobileDevice();
-
+function updateMobileControlsVisibility() {
     const mc = document.getElementById("mobileControls");
-
-    if (mobile) {
-        /* -- Portrait mode -- */
-        // Scale to fill screen edge-to-edge
-        const scale = Math.min(vw / PORTRAIT_W, vh / PORTRAIT_H);
-        container.dataset.mode = "portrait";
-        container.style.width  = PORTRAIT_W + "px";
-        container.style.height = PORTRAIT_H + "px";
-        container.style.transform = `scale(${scale})`;
-        if (gameCanvas) {
-            gameCanvas.style.width  = PORTRAIT_W + "px";
-            gameCanvas.style.height = PORTRAIT_H + "px";
-            gameCanvas.style.borderRadius = "0";
-        }
-        if (mc) mc.style.display = "flex";
-    } else {
-        /* -- Landscape / Desktop mode -- */
-        const scale = Math.min(vw / LANDSCAPE_W, vh / LANDSCAPE_H, 1);
-        container.dataset.mode = "landscape";
-        container.style.width  = LANDSCAPE_W + "px";
-        container.style.height = LANDSCAPE_H + "px";
-        container.style.transform = `scale(${scale})`;
-        if (gameCanvas) {
-            gameCanvas.style.width  = LANDSCAPE_W + "px";
-            gameCanvas.style.height = LANDSCAPE_H + "px";
-            gameCanvas.style.borderRadius = "20px";
-        }
-        if (mc) mc.style.display = "none";
-    }
+    if (mc) mc.style.display = isMobileDevice() ? "flex" : "none";
 }
 
-applyGameScale();
-window.addEventListener("resize", applyGameScale);
-
-applyGameScale();
-window.addEventListener("resize", applyGameScale);
+updateMobileControlsVisibility();
+window.addEventListener("resize", updateMobileControlsVisibility);
 
 /* =====================================================
     GLOBAL HIGH SCORE
@@ -186,8 +145,7 @@ if (starCanvas) {
                 opacity: Math.random() * 0.5 + 0.2,
                 twinkleSpeed: Math.random() * 0.02 + 0.005,
                 twinkleOffset: Math.random() * Math.PI * 2,
-                color: "255,255,255",
-                glow: false
+                color: "255,255,255"
             });
         }
 
@@ -204,8 +162,7 @@ if (starCanvas) {
                     opacity: Math.random() * 0.5 + 0.5,
                     twinkleSpeed: Math.random() * 0.03 + 0.01,
                     twinkleOffset: Math.random() * Math.PI * 2,
-                    color: col,
-                    glow: Math.random() < 0.35
+                    color: col
                 });
             }
         }
@@ -220,7 +177,6 @@ if (starCanvas) {
                 twinkleSpeed: Math.random() * 0.04 + 0.015,
                 twinkleOffset: Math.random() * Math.PI * 2,
                 color: Math.random() < 0.5 ? "200,160,255" : "160,220,255",
-                glow: true,
                 spike: true
             });
         }
@@ -265,17 +221,6 @@ if (starCanvas) {
             const twinkle = 0.5 + 0.5 * Math.sin(tick * star.twinkleSpeed + star.twinkleOffset);
             const alpha = star.opacity * (0.6 + 0.4 * twinkle);
 
-            if (star.glow) {
-                const glowR = star.size * 4;
-                const grad = starCtx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowR);
-                grad.addColorStop(0, `rgba(${star.color}, ${alpha * 0.6})`);
-                grad.addColorStop(1, `rgba(${star.color}, 0)`);
-                starCtx.beginPath();
-                starCtx.arc(star.x, star.y, glowR, 0, Math.PI * 2);
-                starCtx.fillStyle = grad;
-                starCtx.fill();
-            }
-
             if (star.spike) {
                 const spikeLen = star.size * 6 * (0.7 + 0.3 * twinkle);
                 starCtx.save();
@@ -310,11 +255,21 @@ if (starCanvas) {
 const canvas = document.getElementById("gameCanvas");
 if (canvas) {
     const ctx = canvas.getContext("2d");
+    const gameWrapper = document.getElementById("gameWrapper");
 
-    // Set canvas resolution based on device
+    // Match the canvas's internal resolution to its actual on-screen
+    // size so it always fills the full browser window, on any device.
+    function resizeCanvasToWindow() {
+        const w = Math.round((gameWrapper || document.documentElement).clientWidth  || window.innerWidth);
+        const h = Math.round((gameWrapper || document.documentElement).clientHeight || window.innerHeight);
+        canvas.width  = w;
+        canvas.height = h;
+    }
+
+    // Set initial canvas resolution based on device
     const onMobile = isMobileDevice();
-    canvas.width  = onMobile ? PORTRAIT_W  : LANDSCAPE_W;
-    canvas.height = onMobile ? PORTRAIT_H  : LANDSCAPE_H;
+    resizeCanvasToWindow();
+    window.addEventListener("resize", resizeCanvasToWindow);
 
     let score = 0;
     let lives = 5;
@@ -413,6 +368,16 @@ if (canvas) {
         el.style.top  = y + "px";
         document.getElementById("gameContainer").appendChild(el);
         el.addEventListener("animationend", () => el.remove());
+    }
+
+    /* ---- Screen shake (on losing a life) ---- */
+    function triggerShake() {
+        const el = document.getElementById("gameContainer");
+        if (!el) return;
+        el.classList.remove("shake");
+        void el.offsetWidth; // restart animation even if triggered again quickly
+        el.classList.add("shake");
+        el.addEventListener("animationend", () => el.classList.remove("shake"), { once: true });
     }
 
     /* ---- Level banner ---- */
@@ -633,12 +598,7 @@ if (canvas) {
 
     function updateLivesDisplay(isDamage) {
         const container = document.getElementById("lives");
-        const gameBox   = document.getElementById("gameContainer");
         if (!container) return;
-        if (isDamage && gameBox) {
-            gameBox.classList.add("shake-effect");
-            setTimeout(() => gameBox.classList.remove("shake-effect"), 450);
-        }
         container.innerHTML = "";
         for (let i = 0; i < lives; i++) {
             const img = document.createElement("img");
@@ -706,6 +666,7 @@ if (canvas) {
                 combo = 0;
                 lives--;
                 updateLivesDisplay(true);
+                triggerShake();
                 if (lives <= 0) { endGame(); return; }
                 continue;
             }
@@ -829,18 +790,6 @@ if (canvas) {
 /* =====================================================
     VISUAL EFFECTS (HOME PAGE)
 ===================================================== */
-const title = document.querySelector(".heroTitle");
-if (title) {
-    let glow = 0;
-    function glowTitle() {
-        glow += 0.05;
-        const intensity = (Math.sin(glow) + 1) * 15;
-        title.style.textShadow = "0 0 " + intensity + "px rgb(111,0,255)";
-        requestAnimationFrame(glowTitle);
-    }
-    glowTitle();
-}
-
 const buttons = document.querySelectorAll(".heroBtn");
 buttons.forEach(btn => {
     btn.addEventListener("mouseenter", () => btn.style.transform = "scale(1.05)");

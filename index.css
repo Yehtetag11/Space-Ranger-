@@ -156,27 +156,12 @@ header {
     50%       { opacity: 1;   transform: scale(1.05); }
 }
 
-.ship-glow {
-    position: absolute;
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(111,0,255,0.35) 0%, transparent 70%);
-    animation: glowBreath 3s ease-in-out infinite;
-}
-
-@keyframes glowBreath {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50%       { opacity: 1;   transform: scale(1.25); }
-}
-
 .ship-img {
     width: 80px;
     height: 80px;
     object-fit: contain;
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 14px rgba(111, 0, 255, 0.9));
     animation: shipHover 3s ease-in-out infinite;
 }
 
@@ -207,15 +192,6 @@ header {
     font-size: 64px;
     letter-spacing: 8px;
     color: rgb(111, 0, 255);
-    text-shadow:
-        0 0 20px rgba(111, 0, 255, 0.6),
-        0 0 60px rgba(111, 0, 255, 0.2);
-    animation: titleGlow 3s ease-in-out infinite;
-}
-
-@keyframes titleGlow {
-    0%, 100% { text-shadow: 0 0 18px rgba(111,0,255,0.5), 0 0 50px rgba(111,0,255,0.15); }
-    50%       { text-shadow: 0 0 30px rgba(111,0,255,0.9), 0 0 80px rgba(111,0,255,0.4); }
 }
 
 .title-sub {
@@ -282,15 +258,11 @@ header {
 .heroBtn--primary {
     outline: 1px solid rgb(111, 0, 255);
     background: rgba(111, 0, 255, 0.08);
-    box-shadow: 0 0 0 1px rgba(111,0,255,0.15), inset 0 0 24px rgba(111,0,255,0.06);
 }
 
 .heroBtn--primary:hover {
     background: rgba(111, 0, 255, 0.18);
-    box-shadow:
-        0 0 0 1px rgba(111,0,255,0.9),
-        0 0 28px rgba(111,0,255,0.45),
-        inset 0 0 20px rgba(111,0,255,0.12);
+    outline: 1px solid rgba(111,0,255,0.9);
 }
 
 /* Secondary */
@@ -302,7 +274,6 @@ header {
 .heroBtn--secondary:hover {
     outline-color: rgba(200, 190, 220, 0.6);
     background: rgba(255,255,255,0.07);
-    box-shadow: 0 0 18px rgba(200,190,220,0.1);
 }
 
 /* =========================================
@@ -341,7 +312,6 @@ header {
 
 .stat__value--online {
     color: #00e87a;
-    text-shadow: 0 0 10px rgba(0, 232, 122, 0.5);
     animation: onlinePulse 2s ease-in-out infinite;
 }
 

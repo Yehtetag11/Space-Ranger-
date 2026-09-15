@@ -63,9 +63,6 @@ html, body {
 
 .contactTitle--accent {
     color: rgb(111, 0, 255);
-    text-shadow:
-        0 0 20px rgba(111, 0, 255, 0.6),
-        0 0 60px rgba(111, 0, 255, 0.2);
 }
 
 /* =========================================
@@ -157,13 +154,12 @@ html, body {
     border: 1px solid rgba(111, 0, 255, 0.18);
     backdrop-filter: blur(10px);
     text-align: left;
-    transition: border-color 0.3s, transform 0.25s, box-shadow 0.3s;
+    transition: border-color 0.3s, transform 0.25s;
 }
 
 .infoItem:hover {
     transform: translateY(-4px);
     border-color: rgba(111, 0, 255, 0.6);
-    box-shadow: 0 0 24px rgba(111, 0, 255, 0.2);
 }
 
 .infoItem__icon {

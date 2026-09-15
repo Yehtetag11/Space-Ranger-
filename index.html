@@ -21,7 +21,9 @@
 
     <!-- ORIGINAL header — untouched -->
     <header>
-        <div class="logo">SPACE RANGER</div>
+        <div class="logo" onclick="location.href='index.html'">
+            <span class="logo-text">SPACE <span class="logo-accent">RANGER</span></span>
+        </div>
 
         <nav class="nav-links">
             <a href="index.html">Home</a>
@@ -59,7 +61,6 @@
             <div class="ship-ring ship-ring--outer"></div>
             <div class="ship-ring ship-ring--mid"></div>
             <div class="ship-ring ship-ring--inner"></div>
-            <div class="ship-glow"></div>
             <img src="shooter.png" class="ship-img" alt="Space Ranger ship">
         </div>
 
@@ -136,6 +137,28 @@
             bgMusic.addEventListener("play",  function(){ musicBtn.classList.add("music-playing"); });
             bgMusic.addEventListener("pause", function(){ musicBtn.classList.remove("music-playing"); });
         }
+    })();
+    </script>
+
+    <!-- Page transition: fade out before navigating to another page,
+         so pages cross-fade instead of jump-cutting -->
+    <script>
+    (function() {
+        document.addEventListener("click", function(e) {
+            var link = e.target.closest("a[href]");
+            if (!link) return;
+
+            var href = link.getAttribute("href");
+            var isExternal = /^([a-z]+:)?\/\//i.test(href) || href.startsWith("mailto:") || href.startsWith("tel:");
+            if (!href || href.startsWith("#") || isExternal || link.target === "_blank" ||
+                e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                return;
+            }
+
+            e.preventDefault();
+            document.body.classList.add("page-fade-out");
+            setTimeout(function() { window.location.href = href; }, 300);
+        });
     })();
     </script>
 

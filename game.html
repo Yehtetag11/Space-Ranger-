@@ -24,17 +24,25 @@
             <!-- HUD: wrapped for animated border -->
             <div id="ui-wrapper">
                 <div id="ui">
-                    <span class="hud-label">Score</span>
-                    <span class="hud-value" id="score">0</span>
+                    <div class="hud-stat">
+                        <span class="hud-label">Score</span>
+                        <span class="hud-value" id="score">0</span>
+                    </div>
                     <span class="hud-sep"></span>
-                    <span class="hud-label">Level</span>
-                    <span class="hud-value" id="level">1</span>
+                    <div class="hud-stat">
+                        <span class="hud-label">Level</span>
+                        <span class="hud-value" id="level">1</span>
+                    </div>
                     <span class="hud-sep"></span>
-                    <span class="hud-label">Best</span>
-                    <span class="hud-value" id="highScore">0</span>
+                    <div class="hud-stat">
+                        <span class="hud-label">Best</span>
+                        <span class="hud-value" id="highScore">0</span>
+                    </div>
                     <span class="hud-sep"></span>
-                    <span class="hud-label">Lives</span>
-                    <span id="lives"></span>
+                    <div class="hud-stat hud-stat--lives">
+                        <span class="hud-label">Lives</span>
+                        <span id="lives"></span>
+                    </div>
                 </div>
             </div>
 
@@ -63,7 +71,7 @@
                     <div id="newBestLabel">✦ New Best ✦</div>
                     <p>Final Score<br><span id="finalScore">0</span></p>
                     <button class="heroBtn" onclick="restartGame()"><span>Play Again</span></button>
-                    <button class="heroBtn btn-secondary" onclick="location.href='index.html'"><span>Home</span></button>
+                    <button class="heroBtn btn-secondary" onclick="goToPage('index.html')"><span>Home</span></button>
                 </div>
             </div>
 
@@ -122,6 +130,13 @@
             if (a.getAttribute('href') === page) a.classList.add('active');
         });
     })();
+    </script>
+    <!-- Page transition: fade out before navigating to another page -->
+    <script>
+    function goToPage(href) {
+        document.body.classList.add("page-fade-out");
+        setTimeout(function() { window.location.href = href; }, 300);
+    }
     </script>
 </body>
 
